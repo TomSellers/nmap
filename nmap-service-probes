@@ -12043,21 +12043,35 @@ match domain m|\x07version\x04bind\0\0\x10\0\x03\xc0\x0c\0\x10\0\x03.{7}(\d[-\w.
 # ISC BIND - Ubuntu
 match domain m|\x07version\x04bind\0\0\x10\0\x03\xc0\x0c\0\x10\0\x03.{7}(\d[-\w._]*?)-[Uu]buntu|s p/ISC BIND/ v/$1/ i/Ubuntu Linux/ o/Linux/ cpe:/a:isc:bind:$1/ cpe:/o:linux:linux_kernel/a
 
-# ISC BIND - Bare release numbers - may be dragons here
-match domain m|\x07version\x04bind\0\0\x10\0\x03\xc0\x0c\0\x10\0\x03.{7}(?:BIND )?([89][.\d]+(?>[-Prc\d]+))[\0\xc0]| p/ISC BIND/ v/$1/ cpe:/a:isc:bind:$1/
+# ISC BIND - Release numbers w/o OS info - may be dragons here
+# rpz = response policy zone patch     rl = rate liming patch
+# 9.8.4-rpz2+rl005.12-P1   9.6-ESV-R11-P2  9.5.0b2
+match domain m|\x07version\x04bind\0\0\x10\0\x03\xc0\x0c\0\x10\0\x03.{7}(?:BIND )?([89][.\d]+(?:[ab]\d+)?(?:rc\d)?(?:-rpz\d)?(?:[-+]rl[\d.]+)?(?:-ESV(?:-R\d+)?)?(?:-[SPW]\d+)?(?:-NOESW)?)[\0\xc0]| p/ISC BIND/ v/$1/ cpe:/a:isc:bind:$1/
 
 
 # dnsmasq
 match domain m|\x07version\x04bind\0\0\x10\0\x03\xc0\x0c\0\x10\0\x03.{7}dnsmasq-([-\w._ ]+)$|s p/dnsmasq/ v/$1/ cpe:/a:thekelleys:dnsmasq:$1/
 
 # Microsoft DNS - assumes hosts running DNS service are the server version of a given kernel
-#match domain m|\x07version\x04bind\0\0\x10\0\x03\xc0\x0c\0\x10\0\x01.{7}Microsoft DNS (10.0.+)|s p/Microsoft DNS/ i|Windows Server 2016| v/$1/ o/Windows/ cpe:/a:microsoft:dns/ cpe:/o:microsoft:windows_server_2016/a
-match domain m|\x07version\x04bind\0\0\x10\0\x03\xc0\x0c\0\x10\0\x01.{7}Microsoft DNS (6.3.9600.+)|s p/Microsoft DNS/ i|Windows Server 2012 R2| v/$1/ o/Windows/ cpe:/a:microsoft:dns/ cpe:/o:microsoft:windows_server_2012:r2/a
-match domain m|\x07version\x04bind\0\0\x10\0\x03\xc0\x0c\0\x10\0\x01.{7}Microsoft DNS (6.1.7601.+)|s p/Microsoft DNS/ i|Windows Server 2008 R2 SP1| v/$1/ o/Windows/ cpe:/a:microsoft:dns/ cpe:/o:microsoft:windows_server_2008:r2:sp1/a
-match domain m|\x07version\x04bind\0\0\x10\0\x03\xc0\x0c\0\x10\0\x01.{7}Microsoft DNS (6.1.7600.+)|s p/Microsoft DNS/ i|Windows Server 2008 R2| v/$1/ o/Windows/ cpe:/a:microsoft:dns/ cpe:/o:microsoft:windows_server_2008:r2/a
-match domain m|\x07version\x04bind\0\0\x10\0\x03\xc0\x0c\0\x10\0\x01.{7}Microsoft DNS (6.0.6002.+)|s p/Microsoft DNS/ i|Windows Server 2008 SP2| v/$1/ o/Windows/ cpe:/a:microsoft:dns/ cpe:/o:microsoft:windows_server_2008:-:sp2/a
-match domain m|\x07version\x04bind\0\0\x10\0\x03\xc0\x0c\0\x10\0\x01.{7}Microsoft DNS (6.0.6001.+)|s p/Microsoft DNS/ i|Windows Server 2008 SP1| v/$1/ o/Windows/ cpe:/a:microsoft:dns/ cpe:/o:microsoft:windows_server_2008:-:sp1/a
-#match domain m|\x07version\x04bind\0\0\x10\0\x03\xc0\x0c\0\x10\0\x01.{7}Microsoft DNS (.+)|s p/Microsoft DNS/ v/$1/ o/Windows/ cpe:/a:microsoft:dns/ cpe:/o:microsoft:windows/a
+# Microsoft has 3 configuration states that govern how the version is reported:
+# 0 = Off, no version response, 1 = Full version (6.3.9600 and often build), 2 = minimal (6.3)
+# Ref:  dnscmd /config /EnableVersionQuery <value> - https://msdn.microsoft.com/en-us/library/cc422472.aspx
+# match full response
+match domain m|\x07version\x04bind\0\0\x10\0\x03\xc0\x0c\0\x10\0\x01.{7}Microsoft DNS (10\.0\..+)|s p/Microsoft DNS/ i|Windows Server 2016| v/$1/ o/Windows/ cpe:/a:microsoft:dns/ cpe:/o:microsoft:windows_server_2016/a
+match domain m|\x07version\x04bind\0\0\x10\0\x03\xc0\x0c\0\x10\0\x01.{7}Microsoft DNS (6\.3\.9600.+)|s p/Microsoft DNS/ i|Windows Server 2012 R2| v/$1/ o/Windows/ cpe:/a:microsoft:dns/ cpe:/o:microsoft:windows_server_2012:r2/a
+match domain m|\x07version\x04bind\0\0\x10\0\x03\xc0\x0c\0\x10\0\x01.{7}Microsoft DNS (6\.2\.9200.+)|s p/Microsoft DNS/ i|Windows Server 2012| v/$1/ o/Windows/ cpe:/a:microsoft:dns/ cpe:/o:microsoft:windows_server_2012/a
+match domain m|\x07version\x04bind\0\0\x10\0\x03\xc0\x0c\0\x10\0\x01.{7}Microsoft DNS (6\.1\.7601.+)|s p/Microsoft DNS/ i|Windows Server 2008 R2 SP1| v/$1/ o/Windows/ cpe:/a:microsoft:dns/ cpe:/o:microsoft:windows_server_2008:r2:sp1/a
+match domain m|\x07version\x04bind\0\0\x10\0\x03\xc0\x0c\0\x10\0\x01.{7}Microsoft DNS (6\.1\.7600.+)|s p/Microsoft DNS/ i|Windows Server 2008 R2| v/$1/ o/Windows/ cpe:/a:microsoft:dns/ cpe:/o:microsoft:windows_server_2008:r2/a
+match domain m|\x07version\x04bind\0\0\x10\0\x03\xc0\x0c\0\x10\0\x01.{7}Microsoft DNS (6\.0\.6002.+)|s p/Microsoft DNS/ i|Windows Server 2008 SP2| v/$1/ o/Windows/ cpe:/a:microsoft:dns/ cpe:/o:microsoft:windows_server_2008:-:sp2/a
+match domain m|\x07version\x04bind\0\0\x10\0\x03\xc0\x0c\0\x10\0\x01.{7}Microsoft DNS (6\.0\.6001.+)|s p/Microsoft DNS/ i|Windows Server 2008 SP1| v/$1/ o/Windows/ cpe:/a:microsoft:dns/ cpe:/o:microsoft:windows_server_2008:-:sp1/a
+# Match minimal response
+match domain m|\x07version\x04bind\0\0\x10\0\x03\xc0\x0c\0\x10\0\x01.{7}Microsoft DNS (10\.0$)|s p/Microsoft DNS/ i|Windows Server 2016| v/$1/ o/Windows/ cpe:/a:microsoft:dns/ cpe:/o:microsoft:windows_server_2016/a
+match domain m|\x07version\x04bind\0\0\x10\0\x03\xc0\x0c\0\x10\0\x01.{7}Microsoft DNS (6\.3)$|s p/Microsoft DNS/ i|Windows Server 2012 R2| v/$1/ o/Windows/ cpe:/a:microsoft:dns/ cpe:/o:microsoft:windows_server_2012:r2/a
+match domain m|\x07version\x04bind\0\0\x10\0\x03\xc0\x0c\0\x10\0\x01.{7}Microsoft DNS (6\.2)$|s p/Microsoft DNS/ i|Windows Server 2012| v/$1/ o/Windows/ cpe:/a:microsoft:dns/ cpe:/o:microsoft:windows_server_2012/a
+match domain m|\x07version\x04bind\0\0\x10\0\x03\xc0\x0c\0\x10\0\x01.{7}Microsoft DNS (6\.1)$|s p/Microsoft DNS/ i|Windows Server 2008 R2| v/$1/ o/Windows/ cpe:/a:microsoft:dns/ cpe:/o:microsoft:windows_server_2008:r2/a
+match domain m|\x07version\x04bind\0\0\x10\0\x03\xc0\x0c\0\x10\0\x01.{7}Microsoft DNS (6\.0)$|s p/Microsoft DNS/ i|Windows Server 2008| v/$1/ o/Windows/ cpe:/a:microsoft:dns/ cpe:/o:microsoft:windows_server_2008:/a
+# Generic Windows DNS match
+softmatch domain m|\x07version\x04bind\0\0\x10\0\x03\xc0\x0c\0\x10\0\x01.{7}Microsoft DNS (.+)|s p/Microsoft DNS/ v/$1/ o/Windows/ cpe:/a:microsoft:dns/ cpe:/o:microsoft:windows/a
 
 # PowerDNS
 match domain m|\x07version\x04bind\0\0\x10\0\x03\xc0\x0c\0\x10\0\x03.{7}PowerDNS.Authoritative.Server.(\d[\w._-]+)| p/PowerDNS Authoritative Server/ v/$1/ cpe:/a:powerdns:authoritative:$1/
@@ -12070,6 +12084,7 @@ match domain m|\x07version\x04bind\0\0\x10\0\x03\xc0\x0c\0\x10\0\x03.{7}Served b
 match domain m|\x07version\x04bind\0\0\x10\0\x03\xc0\x0c\0\x10\0\x03.{7}Nominum Vantio (\w+) ([\d\.]+)$|s p/Nominum Vantio $1/ v/$2/
 match domain m|\x07version\x04bind\0\0\x10\0\x03\xc0\x0c\0\x10\0\x03.{7}Nominum Vantio ([\d\.]+)|s p/Nominum Vantio/ v/$1/
 match domain m|\x07version\x04bind\0\0\x10\0\x03\xc0\x0c\0\x10\0\x03.{7}Nominum Vantio ([\d\.]+)|s p/Nominum Vantio/ v/$1/
+#### FIXFIX ^^^ WTF is this?
 
 # NLNet Labs products - unbound / nsd
 match domain m|\x07version\x04bind\0\0\x10\0\x03\xc0\x0c\0\x10\0\x03.{7}unbound ([\w._-]+)$| p/Unbound/ v/$1/ cpe:/a:nlnetlabs:unbound:$1/
